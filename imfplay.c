@@ -50,7 +50,7 @@ void opl2_play_imf_file(char *fname, uint16_t freq) {
     int8_t file;
     uint32_t file_size, song_size;
     int16_t bytes_read;
-    float wait;
+    float wait, percentage;
     t_sound_data *sound_data;
     int record;
 
@@ -74,11 +74,20 @@ void opl2_play_imf_file(char *fname, uint16_t freq) {
 
     record = 0;
 
-    do {
-        bytes_read = read(file, buffer + record, FILE_CHUNK_SIZE);
+    bytes_read = read(file, buffer + record, FILE_CHUNK_SIZE);
+
+    while(bytes_read > 0) {
+        percentage = ((float) record / (float) file_size) * 100.0;
+
+        putdec8(percentage);
+        puts("%\r");
 
         record += FILE_CHUNK_SIZE;
-    } while (bytes_read > 0);
+
+        bytes_read = read(file, buffer + record, FILE_CHUNK_SIZE);
+    }
+
+    puts("100%\r\n");
 
     close(file);
 
@@ -87,7 +96,7 @@ void opl2_play_imf_file(char *fname, uint16_t freq) {
     record = 2;
 
     if (song_size == 0) {
-        puts("Found Type-0 IMF file...\r\n");
+        puts("Type-0 IMF file detected!\r\n");
         song_size = file_size;
         record = 0;
     }
@@ -97,6 +106,7 @@ void opl2_play_imf_file(char *fname, uint16_t freq) {
     opl2_reset();
 
     for (; record < song_size; record += sizeof(t_sound_data)) {
+
         sound_data = (t_sound_data *)(buffer + record);
 
         if (sound_data->reg < 0x01 || sound_data->reg > 0xF5) {
@@ -118,7 +128,7 @@ int main(char **argv, int argc) {
 
     int frequency = 560;
 
-    puts("IMFPLAY v0.2 - (c)2017/2018 bootsector - http://www.brunofreitas.com/\r\n\r\n");
+    puts("IMFPLAY v0.2.1 - (c)2017/2018 bootsector - http://www.brunofreitas.com/\r\n\r\n");
 
     if (argc != 3) {
         puts("Usage: IMFPLAY <IMF_FILE.IMF> <IO PORT> <IMF FREQUENCY> (280, 560 or 700)\r\n\r\n");
