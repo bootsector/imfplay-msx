@@ -30,16 +30,20 @@ _msx_wait_jiffies::
     ld hl, #0xFC9E
 
 $1:
+    ld a, b
+    or c
+    jp z, $3
+
     ld a, (hl)
+ 
  $2:
     ld e, (hl)
     cp e
     jp z, $2    
     dec bc
-    ld a, b
-    or c
-    jp nz, $1
+    jp $1
 
+$3:
     pop ix
 
     ret
