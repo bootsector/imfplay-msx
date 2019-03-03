@@ -1,7 +1,7 @@
 CC = /Applications/sdcc-3.6.0/bin/sdcc
 ASM = /Applications/sdcc-3.6.0/bin/sdasz80
 MAKE = make
-OBJCOPY = gobjcopy
+OBJCOPY = /Applications/sdcc-3.6.0/bin/sdobjcopy
 RM = rm -f
 
 SRC_MAIN = imfplay.c
